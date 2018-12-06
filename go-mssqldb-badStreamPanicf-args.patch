@@ -1,0 +1,29 @@
+From 627def1ab77c51f630cda3dac68b4b074d242ae4 Mon Sep 17 00:00:00 2001
+From: Ed Marshall <esm@logic.net>
+Date: Wed, 25 Jul 2018 18:40:05 -0700
+Subject: [PATCH] Type error with Go 1.11
+
+Building with Go 1.11 beta 2 in Fedora Rawhide threw a type error during a naive test run:
+
+```
+[...]
+./token.go:216: badStreamPanicf format %s has arg collationSize of wrong type uint8
+FAIL    github.com/denisenkom/go-mssqldb [build failed]
+```
+---
+ token.go | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/token.go b/token.go
+index 67fdcc2..f7e17b3 100644
+--- a/token.go
++++ b/token.go
+@@ -213,7 +213,7 @@ func processEnvChg(sess *tdsSession) {
+ 
+ 			// SQL Collation data should contain 5 bytes in length
+ 			if collationSize != 5 {
+-				badStreamPanicf("Invalid SQL Collation size value returned from server: %s", collationSize)
++				badStreamPanicf("Invalid SQL Collation size value returned from server: %d", collationSize)
+ 			}
+ 
+ 			// 4 bytes, contains: LCID ColFlags Version
